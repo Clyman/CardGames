@@ -56,10 +56,14 @@ def main():
     deckofcards = cardsindeck()
     shuffleddeck = shuffle(deckofcards)
     print(shuffleddeck)
-    print(input("Do"))
+    #print(input("Do"))
     dealer, player, playingdeck = initialcardssingleplayer(shuffleddeck)
     playingdeck, player = playerhit(playingdeck, player)
     print(len(playingdeck))
+
+
+if __name__ == "__main__":
+    main()
 
 
 
