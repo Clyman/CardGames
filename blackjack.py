@@ -110,17 +110,24 @@ def main():
                         print("BUST! YOU LOST!")
                         hitorstand = "null"
                         break
-                    while total <= 21:
-                        if total <= 21:
+                    elif total < 21:
+                        while total <= 21:
                             hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
-                            while hitorstand == "h":
-                                playingdeck, player, total = playerhit(playingdeck, player)
-                                print(f"Remaining Card Count in deck = {len(playingdeck)}")
-                                if total > 21:
-                                    print("BUST! YOU LOST!")
-                                    hitorstand = "null"
-                                    break
-                                    
+                            playingdeck, player, total = playerhit(playingdeck, player)
+                            if total > 21: 
+                                print("BUST! YOU LOST!")
+                                break
+                    #while total <= 21:
+                     #   if total <= 21:
+                      #      hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
+                       #     while hitorstand == "h":
+                        #        playingdeck, player, total = playerhit(playingdeck, player)
+                         #       print(f"Remaining Card Count in deck = {len(playingdeck)}")
+                          #      if total > 21:
+                           #         print("BUST! YOU LOST!")
+                            #        hitorstand = "null"
+                             #       break    
+                        break                  
             else:
                 break
             print(f"Remaining Card Count in deck = {len(playingdeck)}")
