@@ -32,16 +32,16 @@ def initialcardssingleplayer (playingdeck):
     player.append(playingdeck.pop(0))
     dealer.append(playingdeck.pop(0))
     print("Dealing first card..")
-    time.sleep(1)
+    #time.sleep(1)
     print("Dealing first card....")
-    time.sleep(1)
+    #time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
     print(f"Your Cards : {player}")
     player.append(playingdeck.pop(0))
     dealer.append(playingdeck.pop(0))
     print("Dealing second card..")
-    time.sleep(1)
-    print("Dealing second card....")
+    #time.sleep(1)
+    #print("Dealing second card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
     #Testing function
@@ -71,12 +71,26 @@ def initialcardssingleplayer (playingdeck):
     if laserace == 2:
         print("BAN BAN! YOU WIN x3")
     print(f"Your total number is : {total}")
-    return dealer, player, playingdeck, total
+    return dealer, player, playingdeck
 
 def playerhit (playingdeck, player):
+    total = 0
     player.append(playingdeck.pop(0))
     print(f"Your Cards: {player}")
-    return playingdeck, player
+    for i, card in enumerate(player):
+        try:
+            left = int(card.split("-")[0])
+            total = total + left
+        except ValueError:
+            leftlaser = str(card.split("-")[0])
+            if leftlaser in {"Jack", "Queen", "King"}:
+                leftlaser = 10
+                total = total + leftlaser
+            elif leftlaser == "Ace":
+                leftlaser = 11
+                total = total + leftlaser
+    print(f"Your total number is : {total}")
+    return playingdeck, player, total
 
 
 def main():
@@ -87,9 +101,29 @@ def main():
         choice = input("Do you want to play some BlackJack? yes or no: ").strip().casefold()
         if choice == "yes":
             print("You chose yes. Get ready for some fun")
-            dealer, player, playingdeck, total = initialcardssingleplayer(shuffleddeck)
-            #playingdeck, player = playerhit(playingdeck, player)
-            print(len(playingdeck))
+            dealer, player, playingdeck = initialcardssingleplayer(shuffleddeck)
+            print(f"Remaining Card Count in deck = {len(playingdeck)}")
+            hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
+            if hitorstand == "h": 
+                    playingdeck, player, total = playerhit(playingdeck, player)
+                    if total > 21:
+                        print("BUST! YOU LOST!")
+                        hitorstand = "null"
+                        break
+                    while total <= 21:
+                        if total <= 21:
+                            hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
+                            while hitorstand == "h":
+                                playingdeck, player, total = playerhit(playingdeck, player)
+                                print(f"Remaining Card Count in deck = {len(playingdeck)}")
+                                if total > 21:
+                                    print("BUST! YOU LOST!")
+                                    hitorstand = "null"
+                                    break
+                                    
+            else:
+                break
+            print(f"Remaining Card Count in deck = {len(playingdeck)}")
             deckofcards = cardsindeck()
             shuffleddeck = shuffle(deckofcards)
             print(shuffleddeck)
