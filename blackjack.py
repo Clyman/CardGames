@@ -32,15 +32,15 @@ def initialcardssingleplayer (playingdeck):
     player.append(playingdeck.pop(0))
     dealer.append(playingdeck.pop(0))
     print("Dealing first card..")
-    #time.sleep(1)
+    time.sleep(1)
     print("Dealing first card....")
-    #time.sleep(1)
+    time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
     print(f"Your Cards : {player}")
     player.append(playingdeck.pop(0))
     dealer.append(playingdeck.pop(0))
     print("Dealing second card..")
-    #time.sleep(1)
+    time.sleep(1)
     #print("Dealing second card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
@@ -71,11 +71,15 @@ def initialcardssingleplayer (playingdeck):
     if laserace == 2:
         print("BAN BAN! YOU WIN x3")
     print(f"Your total number is : {total}")
-    return dealer, player, playingdeck
+    return dealer, player, playingdeck, total
 
 def playerhit (playingdeck, player):
     total = 0
     player.append(playingdeck.pop(0))
+    print(f"Drawing one card")
+    time.sleep(1)
+    print(f"Opening your cards")
+    time.sleep(1)
     print(f"Your Cards: {player}")
     for i, card in enumerate(player):
         try:
@@ -92,6 +96,54 @@ def playerhit (playingdeck, player):
     print(f"Your total number is : {total}")
     return playingdeck, player, total
 
+def playerstand (total, dealer, playingdeck):
+    playertotal = total
+    dealertotal = 0
+    print(f"Dealer's Cards : {dealer}")
+    for i, card in enumerate(dealer):
+        try:
+            left = int(card.split("-")[0])
+            dealertotal = dealertotal + left
+        except ValueError:
+            leftlaser = str(card.split("-")[0])
+            if leftlaser in {"Jack", "Queen", "King"}:
+                leftlaser = 10
+                dealertotal = dealertotal + leftlaser
+            elif leftlaser == "Ace":
+                leftlaser = 11
+                dealertotal = dealertotal + leftlaser
+    while True:
+        if dealertotal <= 15:
+            dealer.append(playingdeck.pop(0))
+            print(f"Remaining cards in playing deck = {len(playingdeck)}")
+            dealertotal = 0
+            time.sleep(1)
+            print(f"Dealer opening cards...")
+            print(f"Dealer's Cards : {dealer}")
+            print(f"Dealer draws one card from the deck...")
+            time.sleep(1)
+            for i, card in enumerate(dealer):
+                try:
+                    left = int(card.split("-")[0])
+                    dealertotal = dealertotal + left
+                except ValueError:
+                    leftlaser = str(card.split("-")[0])
+                    if leftlaser in {"Jack", "Queen", "King"}:
+                        leftlaser = 10
+                        dealertotal = dealertotal + leftlaser
+                    elif leftlaser == "Ace":
+                        leftlaser = 11
+                        dealertotal = dealertotal + leftlaser
+        elif dealertotal > 15:
+            break
+    if dealertotal > 21:
+        print(f"Dealer bust with cards {dealer} and total of {dealertotal}")
+        print(f"YOU WIN!!!")
+    print(f"Dealers total number is : {dealertotal}")
+    print(f"Your total number is : {total}")
+    return playertotal, dealertotal
+    
+
 
 def main():
     deckofcards = cardsindeck()
@@ -99,46 +151,63 @@ def main():
     print(shuffleddeck)
     while True:
         choice = input("Do you want to play some BlackJack? yes or no: ").strip().casefold()
-        if choice == "yes":
+        if choice not in {"yes", "no"}:
+            print("Please input only yes or no")
+        elif choice == "yes":
+            deckofcards = cardsindeck()
+            shuffleddeck = shuffle(deckofcards)
+            print(shuffleddeck)
+
             print("You chose yes. Get ready for some fun")
-            dealer, player, playingdeck = initialcardssingleplayer(shuffleddeck)
+            dealer, player, playingdeck, total = initialcardssingleplayer(shuffleddeck)
+            if total == 21:
+                print("YOU WIN x2!")
+                continue
+            elif total == 22:
+                print("YOU WIN x3!")
+                continue
             print(f"Remaining Card Count in deck = {len(playingdeck)}")
             hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
             if hitorstand == "h": 
                     playingdeck, player, total = playerhit(playingdeck, player)
                     if total > 21:
                         print("BUST! YOU LOST!")
+                        print(f"Dealer's cards : {dealer}")
                         hitorstand = "null"
-                        break
-                    elif total < 21:
+                      
+                    elif total <= 21:
                         while total <= 21:
                             hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
-                            playingdeck, player, total = playerhit(playingdeck, player)
-                            if total > 21: 
-                                print("BUST! YOU LOST!")
+
+                            if hitorstand == "h":
+                                playingdeck, player, total = playerhit(playingdeck, player)
+                                if total > 21: 
+                                    print("BUST! YOU LOST!")
+                                    print(f"Dealer's cards : {dealer}")
+                                    break
+                            elif hitorstand == "s":
+                                print("You chose to stand")
+                                playertotal, dealertotal = playerstand(total, dealer, playingdeck)
+                                if playertotal > dealertotal:
+                                    print("Congratulations, You won!!!")
+                                elif dealertotal > playertotal and dealertotal <= 21:
+                                    print("Sad. You lost")
+                                elif playertotal == dealertotal:
+                                    print("ITS A DRAW!")
                                 break
-                    #while total <= 21:
-                     #   if total <= 21:
-                      #      hitorstand = str(input("Do you want to hit or stand? h for hit, s for stand: "))
-                       #     while hitorstand == "h":
-                        #        playingdeck, player, total = playerhit(playingdeck, player)
-                         #       print(f"Remaining Card Count in deck = {len(playingdeck)}")
-                          #      if total > 21:
-                           #         print("BUST! YOU LOST!")
-                            #        hitorstand = "null"
-                             #       break    
-                        break                  
+            elif hitorstand == "s":
+                playertotal, dealertotal = playerstand(total, dealer, playingdeck)
+                if playertotal > dealertotal:
+                    print("Congratulations, You won!!!")
+                elif dealertotal > playertotal and dealertotal <= 21:
+                    print("Sad. You lost")
+                elif playertotal == dealertotal:
+                    print("ITS A DRAW!")
             else:
                 break
-            print(f"Remaining Card Count in deck = {len(playingdeck)}")
-            deckofcards = cardsindeck()
-            shuffleddeck = shuffle(deckofcards)
-            print(shuffleddeck)
-        if choice == "no":
-            print("Have a great day quitter :)")
-            break
-        else:
-            print("Please input only either yes or no")
+        elif choice == "no":
+                print("Have a great day quitter :)")
+                break
     
 if __name__ == "__main__":
     main()
