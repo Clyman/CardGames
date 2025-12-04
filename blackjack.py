@@ -96,6 +96,13 @@ def playerhit (playingdeck, player):
     print(f"Your total number is : {total}")
     return playingdeck, player, total
 
+#Check if Ace is present if bust function
+def checkandreplaceace(player):
+    for i, card in enumerate(player):
+        if card.split("-")[0] == "Ace":
+            player[i] = "1-replace"
+            return player
+
 def playerstand (total, dealer, playingdeck):
     playertotal = total
     dealertotal = 0
@@ -137,6 +144,8 @@ def playerstand (total, dealer, playingdeck):
         elif dealertotal > 15:
             break
     if dealertotal > 21:
+        #Checking condition for ace within the dealer hand
+        dealer = checkandreplaceace(dealer)
         print(f"Dealer bust with cards {dealer} and total of {dealertotal}")
         print(f"YOU WIN!!!")
     print(f"Dealers total number is : {dealertotal}")
@@ -171,6 +180,9 @@ def main():
             if hitorstand == "h": 
                     playingdeck, player, total = playerhit(playingdeck, player)
                     if total > 21:
+                        #Checking condition for ace within the player hand
+                        substituteace = checkace(player)
+
                         print("BUST! YOU LOST!")
                         print(f"Dealer's cards : {dealer}")
                         hitorstand = "null"
@@ -182,6 +194,7 @@ def main():
                             if hitorstand == "h":
                                 playingdeck, player, total = playerhit(playingdeck, player)
                                 if total > 21: 
+                                    #Checking condition for ace within the player hand
                                     print("BUST! YOU LOST!")
                                     print(f"Dealer's cards : {dealer}")
                                     break
