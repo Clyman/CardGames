@@ -98,14 +98,26 @@ def playerhit (playingdeck, player):
 
 #Check if Ace is present if bust function
 def checkandreplaceace(player):
+    newtotal = 0
     for i, card in enumerate(player):
         if card.split("-")[0] == "Ace":
             player[i] = "1-replace"
-            return player
+    for i, card in enumerate(player):
+        try:
+            left = int(card.split("-")[0])
+            newtotal = newtotal + left
+        except ValueError:
+            leftlaser = str(card.split("-")[0])
+            if leftlaser in {"Jack", "Queen", "King"}:
+                leftlaser = 10
+                newtotal = newtotal + leftlaser
+    
+    return player, newtotal
 
 def playerstand (total, dealer, playingdeck):
     playertotal = total
     dealertotal = 0
+    dealer = ['2-Diamond', 'King-Diamond', 'Ace-Spade']
     print(f"Dealer's Cards : {dealer}")
     for i, card in enumerate(dealer):
         try:
@@ -121,9 +133,11 @@ def playerstand (total, dealer, playingdeck):
                 dealertotal = dealertotal + leftlaser
     while True:
         if dealertotal <= 15:
+            print(f"Dealer drawing another card")
+            time.sleep(1)
             dealer.append(playingdeck.pop(0))
             print(f"Remaining cards in playing deck = {len(playingdeck)}")
-            dealertotal = 0
+            dealertotal = 0     ###Might have an issue here 
             time.sleep(1)
             print(f"Dealer opening cards...")
             print(f"Dealer's Cards : {dealer}")
@@ -141,11 +155,49 @@ def playerstand (total, dealer, playingdeck):
                     elif leftlaser == "Ace":
                         leftlaser = 11
                         dealertotal = dealertotal + leftlaser
-        elif dealertotal > 15:
+                #Check and replace ace function
+        if dealertotal > 21:
+                    dealer, dealertotal = checkandreplaceace(dealer)
+                    for card in dealer:
+                        try:
+                            leftcheck = str(card.split("-")[0])
+                            if leftcheck == "1":
+                                continue
+                        except ValueError:
+                            return None
+                    if dealertotal <= 15:
+                        continue
+                    else:
+                        break
+                    
+        elif dealertotal > 15 and dealertotal < 21:
             break
+        elif dealertotal <= 15:
+            print(f"Dealer drawing another card")
+            time.sleep(1)
+            dealer.append(playingdeck.pop(0))
+            print(f"Remaining cards in playing deck = {len(playingdeck)}")
+            dealertotal = 0     ###Might have an issue here 
+            time.sleep(1)
+            print(f"Dealer opening cards...")
+            print(f"Dealer's Cards : {dealer}")
+            print(f"Dealer draws one card from the deck...")
+            time.sleep(1)
+            for i, card in enumerate(dealer):
+                try:
+                    left = int(card.split("-")[0])
+                    dealertotal = dealertotal + left
+                except ValueError:
+                    leftlaser = str(card.split("-")[0])
+                    if leftlaser in {"Jack", "Queen", "King"}:
+                        leftlaser = 10
+                        dealertotal = dealertotal + leftlaser
+                    elif leftlaser == "Ace":
+                        leftlaser = 11
+                        dealertotal = dealertotal + leftlaser
+
     if dealertotal > 21:
-        #Checking condition for ace within the dealer hand
-        dealer = checkandreplaceace(dealer)
+        #Checking condition for ace within the dealer hand           
         print(f"Dealer bust with cards {dealer} and total of {dealertotal}")
         print(f"YOU WIN!!!")
     print(f"Dealers total number is : {dealertotal}")
@@ -181,7 +233,6 @@ def main():
                     playingdeck, player, total = playerhit(playingdeck, player)
                     if total > 21:
                         #Checking condition for ace within the player hand
-                        substituteace = checkace(player)
 
                         print("BUST! YOU LOST!")
                         print(f"Dealer's cards : {dealer}")
