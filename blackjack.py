@@ -78,6 +78,7 @@ def playerhit (playingdeck, player):
     print(f"Opening your cards")
     time.sleep(1)
     print(f"Your Cards: {player}")
+    print(f"Remaining Card Count in deck = {len(playingdeck)}")
     # Use ace-aware total calculation so soft aces drop to 1 when needed
     _, total = checkandreplaceace(player)
     print(f"Your total number is : {total}")
@@ -107,7 +108,6 @@ def checkandreplaceace(player):
 def playerstand (total, dealer, playingdeck):
     playertotal = total
     dealertotal = 0
-    dealer = ['2-Diamond', 'King-Diamond', 'Ace-Spade']
     print(f"Dealer's Cards : {dealer}")
     for i, card in enumerate(dealer):
         try:
@@ -126,13 +126,11 @@ def playerstand (total, dealer, playingdeck):
             print(f"Dealer drawing another card")
             time.sleep(1)
             dealer.append(playingdeck.pop(0))
-            print(f"Remaining cards in playing deck = {len(playingdeck)}")
+            print(f"Remaining Card Count in deck = {len(playingdeck)}")
             dealertotal = 0     ###Might have an issue here 
             time.sleep(1)
             print(f"Dealer opening cards...")
             print(f"Dealer's Cards : {dealer}")
-            print(f"Dealer draws one card from the deck...")
-            time.sleep(1)
             for i, card in enumerate(dealer):
                 try:
                     left = int(card.split("-")[0])
@@ -154,15 +152,15 @@ def playerstand (total, dealer, playingdeck):
                     else:
                         break
                     
-        elif dealertotal > 15 and dealertotal < 21:
+        elif dealertotal > 15 and dealertotal <= 21:
             break
         elif dealertotal <= 15:
             print(f"Dealer drawing another card")
-            time.sleep(1)
+            time.sleep(2)
             dealer.append(playingdeck.pop(0))
-            print(f"Remaining cards in playing deck = {len(playingdeck)}")
+            print(f"Remaining Card Count in deck = {len(playingdeck)}")
             dealertotal = 0     ###Might have an issue here 
-            time.sleep(1)
+            time.sleep(2)
             print(f"Dealer opening cards...")
             print(f"Dealer's Cards : {dealer}")
             print(f"Dealer draws one card from the deck...")
