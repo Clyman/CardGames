@@ -11,13 +11,13 @@ def cardsindeck ():
         else:
             ranks += [x]
     ranks += ["Jack", "Queen", "King"]
-    print(ranks)
-    print(suits)
+    #print(ranks)
+    #print(suits)
     for x in ranks:
         for y in suits:
             deckofcards = deckofcards + [f"{x}-{y}"]
-    print(deckofcards)
-    print(len(deckofcards))
+    #print(deckofcards)
+    #print(len(deckofcards))
     return deckofcards
 
 def shuffle (x):
@@ -44,8 +44,6 @@ def initialcardssingleplayer (playingdeck):
     #print("Dealing second card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
-    #Testing function
-    #player = ["10-Diamond", "Ace-Spade"]
     print(f"Your Cards : {player}")
     #Sum for total amount
     laserace = 0
@@ -74,43 +72,35 @@ def initialcardssingleplayer (playingdeck):
     return dealer, player, playingdeck, total
 
 def playerhit (playingdeck, player):
-    total = 0
     player.append(playingdeck.pop(0))
     print(f"Drawing one card")
     time.sleep(1)
     print(f"Opening your cards")
     time.sleep(1)
     print(f"Your Cards: {player}")
-    for i, card in enumerate(player):
-        try:
-            left = int(card.split("-")[0])
-            total = total + left
-        except ValueError:
-            leftlaser = str(card.split("-")[0])
-            if leftlaser in {"Jack", "Queen", "King"}:
-                leftlaser = 10
-                total = total + leftlaser
-            elif leftlaser == "Ace":
-                leftlaser = 11
-                total = total + leftlaser
+    # Use ace-aware total calculation so soft aces drop to 1 when needed
+    _, total = checkandreplaceace(player)
     print(f"Your total number is : {total}")
     return playingdeck, player, total
 
 #Check if Ace is present if bust function
 def checkandreplaceace(player):
     newtotal = 0
-    for i, card in enumerate(player):
-        if card.split("-")[0] == "Ace":
-            player[i] = "1-replace"
-    for i, card in enumerate(player):
-        try:
-            left = int(card.split("-")[0])
-            newtotal = newtotal + left
-        except ValueError:
-            leftlaser = str(card.split("-")[0])
-            if leftlaser in {"Jack", "Queen", "King"}:
-                leftlaser = 10
-                newtotal = newtotal + leftlaser
+    acecount = 0
+    for card in player:
+        rank = card.split("-")[0]
+        if rank == "Ace":
+            newtotal += 11
+            acecount += 1
+        elif rank in {"Jack", "Queen", "King"}:
+            newtotal += 10
+        else:
+            newtotal += int(rank)
+
+    # downgrade Aces from 11 to 1 until we are <= 21
+    while newtotal > 21 and acecount:
+        newtotal -= 10
+        acecount -= 1
     
     return player, newtotal
 
@@ -158,14 +148,8 @@ def playerstand (total, dealer, playingdeck):
                 #Check and replace ace function
         if dealertotal > 21:
                     dealer, dealertotal = checkandreplaceace(dealer)
-                    for card in dealer:
-                        try:
-                            leftcheck = str(card.split("-")[0])
-                            if leftcheck == "1":
-                                continue
-                        except ValueError:
-                            return None
-                    if dealertotal <= 15:
+                    has_ace = any(card.split("-")[0] == "Ace" for card in dealer)
+                    if dealertotal <= 15 and has_ace:
                         continue
                     else:
                         break
@@ -209,7 +193,7 @@ def playerstand (total, dealer, playingdeck):
 def main():
     deckofcards = cardsindeck()
     shuffleddeck = shuffle(deckofcards)
-    print(shuffleddeck)
+    #print(shuffleddeck)
     while True:
         choice = input("Do you want to play some BlackJack? yes or no: ").strip().casefold()
         if choice not in {"yes", "no"}:
@@ -217,7 +201,7 @@ def main():
         elif choice == "yes":
             deckofcards = cardsindeck()
             shuffleddeck = shuffle(deckofcards)
-            print(shuffleddeck)
+            #print(shuffleddeck)
 
             print("You chose yes. Get ready for some fun")
             dealer, player, playingdeck, total = initialcardssingleplayer(shuffleddeck)
@@ -264,6 +248,7 @@ def main():
                 if playertotal > dealertotal:
                     print("Congratulations, You won!!!")
                 elif dealertotal > playertotal and dealertotal <= 21:
+                    print(f"Dealer total number : {dealertotal}")
                     print("Sad. You lost")
                 elif playertotal == dealertotal:
                     print("ITS A DRAW!")
