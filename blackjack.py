@@ -229,6 +229,7 @@ def playerstand (total, dealer, playingdeck):
                     
         elif dealertotal > 15 and dealertotal <= 21:
             CardArt.print_side_by_side(dealer, color="red")
+            print(f"\033[31mDealer's Cards : {dealer}\033[0m")
             break
         elif dealertotal <= 15:
             print(f"Dealer drawing another card")
@@ -256,7 +257,8 @@ def playerstand (total, dealer, playingdeck):
 
     if dealertotal > 21:
         #Checking condition for ace within the dealer hand
-        CardArt.print_side_by_side(dealer, color="red")           
+        CardArt.print_side_by_side(dealer, color="red")
+        print(f"\033[31mDealer's Cards : {dealer}\033[0m")           
         print(f"Dealer bust with cards \033[31m{dealer}\033[0m and total of \033[31m{dealertotal}\033[0m")
         print(f"YOU WIN!!!")
     print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
@@ -343,16 +345,16 @@ def main():
             elif hitorstand == "s":
                 playertotal, dealertotal = playerstand(total, dealer, playingdeck)
                 if playertotal > dealertotal:
-                    print(f"Dealer's cards : {dealer}")
-                    print(f"Dealer total number : {dealertotal}")
+                    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+                    #print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
                     print("Congratulations, You won!!!")
                 elif dealertotal > playertotal and dealertotal <= 21:
-                    print(f"Dealer's cards : {dealer}")
-                    print(f"Dealer total number : {dealertotal}")
+                    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+                    #print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
                     print("Sad. You lost")
                 elif playertotal == dealertotal:
-                    print(f"Dealer's cards : {dealer}")
-                    print(f"Dealer total number : {dealertotal}")
+                    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+                    #print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
                     print("ITS A DRAW!")
             else:
                 break
