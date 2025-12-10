@@ -36,15 +36,15 @@ def initialcardssingleplayer (playingdeck):
     print("Dealing first card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
-    print(f"Your Cards : {player}")
+    print(f"\033[32mYour Cards : {player}\033[0m")
     player.append(playingdeck.pop(0))
     dealer.append(playingdeck.pop(0))
     print("Dealing second card..")
     time.sleep(1)
-    #print("Dealing second card....")
+    print("Dealing second card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
-    print(f"Your Cards : {player}")
+    print(f"\033[32mYour Cards: {player}\033[0m")
     #Sum for total amount
     laserace = 0
     laserblackjack = 0
@@ -68,7 +68,7 @@ def initialcardssingleplayer (playingdeck):
         print("BLACKJACK! YOU WIN x2")
     if laserace == 2:
         print("BAN BAN! YOU WIN x3")
-    print(f"Your total number is : {total}")
+    print(f"Your total number is : \033[32m{total}\033[0m")
     return dealer, player, playingdeck, total
 
 def playerhit (playingdeck, player):
@@ -77,11 +77,11 @@ def playerhit (playingdeck, player):
     time.sleep(1)
     print(f"Opening your cards")
     time.sleep(1)
-    print(f"Your Cards: {player}")
+    print(f"\033[32mYour Cards: {player}\033[0m")
     print(f"Remaining Card Count in deck = {len(playingdeck)}")
     # Use ace-aware total calculation so soft aces drop to 1 when needed
     _, total = checkandreplaceace(player)
-    print(f"Your total number is : {total}")
+    print(f"Your total number is : \033[32m{total}\033[0m")
     return playingdeck, player, total
 
 #Check if Ace is present if bust function
@@ -108,7 +108,10 @@ def checkandreplaceace(player):
 def playerstand (total, dealer, playingdeck):
     playertotal = total
     dealertotal = 0
-    print(f"Dealer's Cards : {dealer}")
+    time.sleep(1)
+    print(f"Dealer opening cards")
+    time.sleep(1)
+    print(f"\033[31mDealer's Cards : {dealer}\033[0m")
     for i, card in enumerate(dealer):
         try:
             left = int(card.split("-")[0])
@@ -130,7 +133,7 @@ def playerstand (total, dealer, playingdeck):
             dealertotal = 0     ###Might have an issue here 
             time.sleep(1)
             print(f"Dealer opening cards...")
-            print(f"Dealer's Cards : {dealer}")
+            print(f"\033[31mDealer's Cards : {dealer}\033[0m")
             for i, card in enumerate(dealer):
                 try:
                     left = int(card.split("-")[0])
@@ -153,6 +156,7 @@ def playerstand (total, dealer, playingdeck):
                         break
                     
         elif dealertotal > 15 and dealertotal <= 21:
+            print(f"\033[31mDealer's Cards : {dealer}\033[0m")
             break
         elif dealertotal <= 15:
             print(f"Dealer drawing another card")
@@ -161,9 +165,9 @@ def playerstand (total, dealer, playingdeck):
             print(f"Remaining Card Count in deck = {len(playingdeck)}")
             dealertotal = 0     ###Might have an issue here 
             time.sleep(2)
-            print(f"Dealer opening cards...")
-            print(f"Dealer's Cards : {dealer}")
-            print(f"Dealer draws one card from the deck...")
+            #print(f"Dealer opening cards...")
+            #print(f"Dealer's Cards : {dealer}")
+            #print(f"Dealer draws one card from the deck...")
             time.sleep(1)
             for i, card in enumerate(dealer):
                 try:
@@ -180,16 +184,42 @@ def playerstand (total, dealer, playingdeck):
 
     if dealertotal > 21:
         #Checking condition for ace within the dealer hand           
-        print(f"Dealer bust with cards {dealer} and total of {dealertotal}")
+        print(f"Dealer bust with cards \033[31m{dealer}\033[0m and total of \033[31m{dealertotal}\033[0m")
         print(f"YOU WIN!!!")
-    print(f"Dealers total number is : {dealertotal}")
-    print(f"Your total number is : {total}")
+    print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
+    print(f"Your total number is : \033[32m{total}\033[0m")
     return playertotal, dealertotal
     
 
 
 def main():
+    blackjack_banner = r"""
+                    ╔══════════════════════════════════════╗
+                    ║          WELCOME TO THE              ║
+                    ║            CASINO HALL               ║
+                    ╚══════════════════════════════════════╝
+
+            ┌─────────┐       ┌─────────┐       ┌─────────┐
+            │A        │       │K        │       │Q        │
+            │    ♠    │       │    ♥    │       │    ♦    │
+            │        A│       │        K│       │        Q│
+            └─────────┘       └─────────┘       └─────────┘
+
+    ██████╗ ██╗      █████╗  ██████╗██╗  ██╗     ██╗ █████╗  ██████╗██╗  ██╗
+    ██╔══██╗██║     ██╔══██╗██╔════╝██║ ██╔╝     ██║██╔══██╗██╔════╝██║ ██╔╝
+    ██████╔╝██║     ███████║██║     █████╔╝      ██║███████║██║     █████╔╝ 
+    ██╔══██╗██║     ██╔══██║██║     ██╔═██╗ ██   ██║██╔══██║██║     ██╔═██╗ 
+    ██████╔╝███████╗██║  ██║╚██████╗██║  ██╗╚█████╔╝██║  ██║╚██████╗██║  ██╗
+    ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
+
+                    ♦  Try to hit 21 without busting!  ♣
+                    ♠  Dealer must stand on 16+      ♥
+    """
+
+    print(blackjack_banner)
+
     deckofcards = cardsindeck()
+    print(deckofcards)
     shuffleddeck = shuffle(deckofcards)
     #print(shuffleddeck)
     while True:
