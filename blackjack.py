@@ -1,8 +1,74 @@
 import random, time
+class CardArt:
+    RANK_DISPLAY = {
+        "Ace":   "A",
+        "2":     "2",
+        "3":     "3",
+        "4":     "4",
+        "5":     "5",
+        "6":     "6",
+        "7":     "7",
+        "8":     "8",
+        "9":     "9",
+        "10":    "10",
+        "Jack":  "J",
+        "Queen": "Q",
+        "King":  "K",
+    }
+
+    SUIT_SYMBOL = {
+        "Spades":   "♠",
+        "Hearts":   "♥",
+        "Clubs":    "♣",
+        "Diamond": "♦",
+    }
+
+    @classmethod
+    def print_side_by_side(cls, cards, color=None):
+        # Optional ANSI coloring for the full ASCII card output
+        color_prefix = ""
+        color_suffix = ""
+        if color == "red":
+            color_prefix = "\033[31m"
+            color_suffix = "\033[0m"
+        elif color == "green":
+            color_prefix = "\033[32m"
+            color_suffix = "\033[0m"
+       
+        ascii_blocks = []
+
+        for card in cards:
+            left, suits = card.split("-")   # <-- here is the "-" split
+
+            rankdisplay = cls.RANK_DISPLAY[str(left)]
+            suitdisplay = cls.SUIT_SYMBOL[suits]
+            top_label = rankdisplay.ljust(2)
+            bot_label = rankdisplay.rjust(2)
+
+            ascii_card = f"""+-------+
+|{top_label}     |
+|   {suitdisplay}   |
+|     {bot_label}|
++-------+"""
+
+            # split into lines for side-by-side printing
+            ascii_blocks.append(ascii_card.splitlines())
+
+        if not ascii_blocks:
+            return  # nothing to print
+
+        num_lines = len(ascii_blocks[0])
+
+        for i in range(num_lines):
+            row_parts = [block[i] for block in ascii_blocks]
+            line = "  ".join(row_parts)
+            print(f"{color_prefix}{line}{color_suffix}")
+
+    
 
 def cardsindeck ():
     deckofcards = []
-    suits = ["Diamond", "Clubs", "Hearts", "Spade"]
+    suits = ["Diamond", "Clubs", "Hearts", "Spades"]
     ranks = []
     for x in range (1, 11, 1):
         if x == 1:
@@ -36,6 +102,7 @@ def initialcardssingleplayer (playingdeck):
     print("Dealing first card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
+    CardArt.print_side_by_side(player)
     print(f"\033[32mYour Cards : {player}\033[0m")
     player.append(playingdeck.pop(0))
     dealer.append(playingdeck.pop(0))
@@ -44,6 +111,7 @@ def initialcardssingleplayer (playingdeck):
     print("Dealing second card....")
     time.sleep(1)
     #print(f"Dealer's Cards : {dealer}")
+    CardArt.print_side_by_side(player)
     print(f"\033[32mYour Cards: {player}\033[0m")
     #Sum for total amount
     laserace = 0
@@ -77,6 +145,7 @@ def playerhit (playingdeck, player):
     time.sleep(1)
     print(f"Opening your cards")
     time.sleep(1)
+    CardArt.print_side_by_side(player)
     print(f"\033[32mYour Cards: {player}\033[0m")
     print(f"Remaining Card Count in deck = {len(playingdeck)}")
     # Use ace-aware total calculation so soft aces drop to 1 when needed
@@ -109,9 +178,11 @@ def playerstand (total, dealer, playingdeck):
     playertotal = total
     dealertotal = 0
     time.sleep(1)
-    print(f"Dealer opening cards")
+    print(f"Dealer opening cards..")
     time.sleep(1)
-    print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+    print(f"Dealer opening cards....")
+    time.sleep(1)
+    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
     for i, card in enumerate(dealer):
         try:
             left = int(card.split("-")[0])
@@ -126,14 +197,15 @@ def playerstand (total, dealer, playingdeck):
                 dealertotal = dealertotal + leftlaser
     while True:
         if dealertotal <= 15:
-            print(f"Dealer drawing another card")
+            print(f"Dealer drawing another card..")
             time.sleep(1)
             dealer.append(playingdeck.pop(0))
             print(f"Remaining Card Count in deck = {len(playingdeck)}")
             dealertotal = 0     ###Might have an issue here 
             time.sleep(1)
             print(f"Dealer opening cards...")
-            print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+            time.sleep(1)
+            #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
             for i, card in enumerate(dealer):
                 try:
                     left = int(card.split("-")[0])
@@ -156,7 +228,7 @@ def playerstand (total, dealer, playingdeck):
                         break
                     
         elif dealertotal > 15 and dealertotal <= 21:
-            print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+            CardArt.print_side_by_side(dealer, color="red")
             break
         elif dealertotal <= 15:
             print(f"Dealer drawing another card")
@@ -183,7 +255,8 @@ def playerstand (total, dealer, playingdeck):
                         dealertotal = dealertotal + leftlaser
 
     if dealertotal > 21:
-        #Checking condition for ace within the dealer hand           
+        #Checking condition for ace within the dealer hand
+        CardArt.print_side_by_side(dealer, color="red")           
         print(f"Dealer bust with cards \033[31m{dealer}\033[0m and total of \033[31m{dealertotal}\033[0m")
         print(f"YOU WIN!!!")
     print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
@@ -219,9 +292,7 @@ def main():
     print(blackjack_banner)
 
     deckofcards = cardsindeck()
-    print(deckofcards)
     shuffleddeck = shuffle(deckofcards)
-    #print(shuffleddeck)
     while True:
         choice = input("Do you want to play some BlackJack? yes or no: ").strip().casefold()
         if choice not in {"yes", "no"}:
@@ -247,7 +318,6 @@ def main():
                         #Checking condition for ace within the player hand
 
                         print("BUST! YOU LOST!")
-                        print(f"Dealer's cards : {dealer}")
                         hitorstand = "null"
                       
                     elif total <= 21:
@@ -259,7 +329,6 @@ def main():
                                 if total > 21: 
                                     #Checking condition for ace within the player hand
                                     print("BUST! YOU LOST!")
-                                    print(f"Dealer's cards : {dealer}")
                                     break
                             elif hitorstand == "s":
                                 print("You chose to stand")
@@ -274,11 +343,16 @@ def main():
             elif hitorstand == "s":
                 playertotal, dealertotal = playerstand(total, dealer, playingdeck)
                 if playertotal > dealertotal:
+                    print(f"Dealer's cards : {dealer}")
+                    print(f"Dealer total number : {dealertotal}")
                     print("Congratulations, You won!!!")
                 elif dealertotal > playertotal and dealertotal <= 21:
+                    print(f"Dealer's cards : {dealer}")
                     print(f"Dealer total number : {dealertotal}")
                     print("Sad. You lost")
                 elif playertotal == dealertotal:
+                    print(f"Dealer's cards : {dealer}")
+                    print(f"Dealer total number : {dealertotal}")
                     print("ITS A DRAW!")
             else:
                 break
