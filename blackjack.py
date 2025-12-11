@@ -64,7 +64,127 @@ class CardArt:
             line = "  ".join(row_parts)
             print(f"{color_prefix}{line}{color_suffix}")
 
-    
+def print_win_banner():
+    # ANSI color codes for rainbow effect
+    colors = [
+        "\033[91m",  # red
+        "\033[93m",  # yellow
+        "\033[92m",  # green
+        "\033[96m",  # cyan
+        "\033[94m",  # blue
+        "\033[95m",  # magenta
+    ]
+    reset = "\033[0m"
+
+    text = " YOU WIN! "
+    rainbow = ""
+
+    for i, ch in enumerate(text):
+        if ch == " ":
+            rainbow += " "
+        else:
+            color = colors[i % len(colors)]
+            rainbow += color + ch + reset
+
+    print("\n" * 2)
+    print("💰" * 28)
+    print("💰  🎉🎉🎉   JACKPOT VICTORY!   🎉🎉🎉  💰")
+    print("💰" * 28)
+    print(r"""
+                                       _         
+ __   __                     _        | |         
+ \ \ / /__  _   _  __      _(_)_ __   | |
+  \ V / _ \| | | | \ \ /\ / / | '_ \  | |
+   | | (_) | |_| |  \ V  V /| | | | |  _
+   |_|\___/ \__,_|   \_/\_/ |_|_| |_| (_)
+""")
+    print(" " * 10 + rainbow)
+    print("\n" + "✨" * 40 + "\n")
+
+def print_lose_banner():
+    # ANSI color codes for rainbow effect (for the YOU LOST! line)
+    colors = [
+        "\033[91m",  # red
+        "\033[93m",  # yellow
+        "\033[92m",  # green
+        "\033[96m",  # cyan
+        "\033[94m",  # blue
+        "\033[95m",  # magenta
+    ]
+    reset = "\033[0m"
+
+    text = " YOU LOST! "
+    rainbow = ""
+
+    for i, ch in enumerate(text):
+        if ch == " ":
+            rainbow += " "
+        else:
+            color = colors[i % len(colors)]
+            rainbow += color + ch + reset
+
+    big_ascii = r"""
+***********************************************
+*   YY   YY   OOOOO    UU   UU                *
+*    YY YY   OO   OO   UU   UU                *
+*     YYY    OO   OO   UU   UU                *
+*      Y     OO   OO   UU   UU                *
+*      Y      OOOO      UUUUU                 *
+*                                             *
+*   LL       OOOOO    SSSSSS   EEEEEEE        *
+*   LL      OO   OO  SS        EE             *
+*   LL      OO   OO   SSSSS    EEEE           *
+*   LL      OO   OO        SS  EE             *
+*   LLLLLL   OOOO    SSSSSS   EEEEEEE         *
+***********************************************
+"""
+
+    print("\n" * 2)
+    print("💀" * 28)
+    print("💀      💣  DEALER WINS THIS ROUND  💣      💀")
+    print("💀" * 28)
+    print(big_ascii)
+    print(" " * 10 + rainbow)
+    print("\n" + "💔" * 40 + "\n")
+
+def print_draw_banner():
+    # ANSI color codes for rainbow effect (for the IT'S A DRAW! line)
+    colors = [
+        "\033[91m",  # red
+        "\033[93m",  # yellow
+        "\033[92m",  # green
+        "\033[96m",  # cyan
+        "\033[94m",  # blue
+        "\033[95m",  # magenta
+    ]
+    reset = "\033[0m"
+
+    text = " IT'S A DRAW! "
+    rainbow = ""
+
+    for i, ch in enumerate(text):
+        if ch == " ":
+            rainbow += " "
+        else:
+            color = colors[i % len(colors)]
+            rainbow += color + ch + reset
+
+    big_ascii = r"""
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+||                                                            ||
+||                        IT'S A DRAW!                        ||
+||                    NOBODY WINS THIS ROUND                  ||
+||                                                            ||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+"""
+
+    print("\n" * 2)
+    print("🤝" * 28)
+    print("🤝     🤝  IT'S A DRAW — NO WINNER  🤝     🤝")
+    print("🤝" * 28)
+    print(big_ascii)
+    print(" " * 10 + rainbow)
+    print("\n" + "✨" * 40 + "\n")
 
 def cardsindeck ():
     deckofcards = []
@@ -229,6 +349,7 @@ def playerstand (total, dealer, playingdeck):
                     
         elif dealertotal > 15 and dealertotal <= 21:
             CardArt.print_side_by_side(dealer, color="red")
+            print(f"\033[31mDealer's Cards : {dealer}\033[0m")
             break
         elif dealertotal <= 15:
             print(f"Dealer drawing another card")
@@ -256,9 +377,10 @@ def playerstand (total, dealer, playingdeck):
 
     if dealertotal > 21:
         #Checking condition for ace within the dealer hand
-        CardArt.print_side_by_side(dealer, color="red")           
+        CardArt.print_side_by_side(dealer, color="red")
+        print(f"\033[31mDealer's Cards : {dealer}\033[0m")           
         print(f"Dealer bust with cards \033[31m{dealer}\033[0m and total of \033[31m{dealertotal}\033[0m")
-        print(f"YOU WIN!!!")
+        print_win_banner()
     print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
     print(f"Your total number is : \033[32m{total}\033[0m")
     return playertotal, dealertotal
@@ -318,6 +440,7 @@ def main():
                         #Checking condition for ace within the player hand
 
                         print("BUST! YOU LOST!")
+                        print_lose_banner()
                         hitorstand = "null"
                       
                     elif total <= 21:
@@ -329,31 +452,37 @@ def main():
                                 if total > 21: 
                                     #Checking condition for ace within the player hand
                                     print("BUST! YOU LOST!")
+                                    print_lose_banner()
                                     break
                             elif hitorstand == "s":
                                 print("You chose to stand")
                                 playertotal, dealertotal = playerstand(total, dealer, playingdeck)
                                 if playertotal > dealertotal:
-                                    print("Congratulations, You won!!!")
+                                    print_win_banner()
                                 elif dealertotal > playertotal and dealertotal <= 21:
                                     print("Sad. You lost")
+                                    print_lose_banner()
                                 elif playertotal == dealertotal:
                                     print("ITS A DRAW!")
+                                    print_draw_banner()
                                 break
             elif hitorstand == "s":
                 playertotal, dealertotal = playerstand(total, dealer, playingdeck)
                 if playertotal > dealertotal:
-                    print(f"Dealer's cards : {dealer}")
-                    print(f"Dealer total number : {dealertotal}")
-                    print("Congratulations, You won!!!")
+                    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+                    #print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
+                    #print("Congratulations, You won!!!")
+                    print_win_banner()
                 elif dealertotal > playertotal and dealertotal <= 21:
-                    print(f"Dealer's cards : {dealer}")
-                    print(f"Dealer total number : {dealertotal}")
+                    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+                    #print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
                     print("Sad. You lost")
+                    print_lose_banner()
                 elif playertotal == dealertotal:
-                    print(f"Dealer's cards : {dealer}")
-                    print(f"Dealer total number : {dealertotal}")
+                    #print(f"\033[31mDealer's Cards : {dealer}\033[0m")
+                    #print(f"Dealers total number is : \033[31m{dealertotal}\033[0m")
                     print("ITS A DRAW!")
+                    print_draw_banner()
             else:
                 break
         elif choice == "no":
