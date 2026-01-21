@@ -13,8 +13,6 @@ class Deck:
             for s in suits:
                 card = f"{r}-{s}"
                 self.cardlist.append(card)
-    def shuffle(self):
-        random.shuffle(self.cardlist)
 
 class Person:
     def __init__(self, Name, cards = []):
@@ -22,14 +20,6 @@ class Person:
         self.cards = cards
         self.total = 0
         self.lastnumber = 0
-
-    def firstdraw(self):
-        firstcard = deckofcards.cardlist[0]
-        deckofcards.cardlist.pop(0)
-        self.cards.append(firstcard)
-        secondcard = deckofcards.cardlist[0]
-        deckofcards.cardlist.pop(0)
-        self.cards.append(secondcard)
 
     def gettotalnumber(self):
         for card in self.cards:
@@ -57,32 +47,30 @@ class Player(Person):
     def __init__(self, Name):
         super().__init__(Name)
 
-class Dealer(Person)
+class Dealer(Person):
     def __init__(self, Name):
         super().__init__(Name)
 
 class Engine:
     def __init__(self, deck, player, dealer):
+        self.deck = deck
+        self.player = player
+        self.dealer = dealer
 
-        
+    def shuffledeck(self):
+        random.shuffle(self.deck)
 
-deckofcards = Deck()
-print(deckofcards.cardlist)
-print(len(deckofcards.cardlist))
-deckofcards.shuffle()
-print(deckofcards.cardlist)
-p = Person("Clyman")
-print(p.Name)
-p.firstdraw()
-print(p.cards)
-p.gettotalnumber()
-print(p.total)
-p.getlastnumber()
-print(p.lastnumber)
-p.drawcard()
-p.gettotalnumber()
-print(p.cards)
-print(p.total)
-p.getlastnumber()
-print(p.lastnumber)
+    def firstdraw(self):
+        self.player.cards.append(self.deck[0])
+        self.deck.cardlist.pop(0)
+        self.dealer.cards.append(self.deck[0])
+        self.deck.pop(0)
+
+deck = Deck()   
+p = Player("Dragoon rider")
+d = Dealer("Django")
+game = Engine(deck.cardlist, p, d)
+game.shuffledeck()
+print(game.deck)
+
 
