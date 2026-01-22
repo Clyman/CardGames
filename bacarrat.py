@@ -15,9 +15,9 @@ class Deck:
                 self.cardlist.append(card)
 
 class Person:
-    def __init__(self, Name, cards = []):
+    def __init__(self, Name):
         self.Name = Name
-        self.cards = cards
+        self.cards = []
         self.total = 0
         self.lastnumber = 0
 
@@ -62,15 +62,27 @@ class Engine:
 
     def firstdraw(self):
         self.player.cards.append(self.deck[0])
-        self.deck.cardlist.pop(0)
+        self.deck.pop(0)
+        print(self.player.cards)
         self.dealer.cards.append(self.deck[0])
         self.deck.pop(0)
+        print(self.dealer.cards)
+        self.player.cards.append(self.deck[0])
+        self.deck.pop(0)
+        print(self.player.cards)
+        self.dealer.cards.append(self.deck[0])
+        self.deck.pop(0)
+        print(self.dealer.cards)
+    
+
 
 deck = Deck()   
 p = Player("Dragoon rider")
 d = Dealer("Django")
 game = Engine(deck.cardlist, p, d)
 game.shuffledeck()
+game.firstdraw()
 print(game.deck)
+print(len(game.deck))
 
 
