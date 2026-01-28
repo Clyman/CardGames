@@ -44,11 +44,11 @@ class Player(Person):
         super().__init__(Name)
 
     def playerwin(self):
-        print(f"Your Cards : {self.cards}")
-        print(f"Your final number is {self.lastnumber}. YOU WIN!!!!")
+        print(f"\033[92mYour Cards : {self.cards}\033[0m")
+        print(f"\033[92mYour final number is {self.lastnumber}\033[0m")
 
     def printcards(self):
-        print(f"Your Cards : {self.cards}")
+        print(f"\033[92mYour Cards : {self.cards}\033[0m")
 
 
 class Dealer(Person):
@@ -56,11 +56,11 @@ class Dealer(Person):
         super().__init__(Name)
 
     def dealerwin(self):
-        print(f"Django's cards : {self.cards}")
-        print(f"Django's final number is {self.lastnumber}. YOU LOSE!!!")
+        print(f"\033[91mDjango's cards : {self.cards}\033[0m")
+        print(f"\033[91mDjango's final number is {self.lastnumber}\033[0m")
 
     def printcards(self):
-        print(f"Django's Cards : {self.cards}")
+        print(f"\033[91mDjango's Cards : {self.cards}\033[0m")
 
 class Engine:
     def __init__(self, deck, player, dealer):
@@ -69,25 +69,27 @@ class Engine:
         self.dealer = dealer
 
     def shuffledeck(self):
+        print("Shuffling Deck....")
         random.shuffle(self.deck)
+        self.dealing()
 
     def firstdraw(self):
+        print("Drawing cards")
         self.player.cards.append(self.deck[0])
         self.deck.pop(0)
-        print(f"Your Cards : {self.player.cards}")
+        print(f"\033[92mYour Cards : {self.player.cards}\033[0m")
         self.dealing()
         self.dealer.cards.append(self.deck[0])
         self.deck.pop(0)
-        #print(self.dealer.cards)
         self.player.cards.append(self.deck[0])
         self.deck.pop(0)
+        print(f"Drawing Second Card...")
         self.dealing()
-        print(self.player.cards)
+        print(f"\033[92m{self.player.cards}\033[0m")
         self.player.gettotalnumber()
         self.dealer.cards.append(self.deck[0])
         self.deck.pop(0)
         self.dealer.gettotalnumber()
-        #print(self.dealer.cards)
 
     def conclusion(self):
         if self.player.lastnumber == self.dealer.lastnumber:
@@ -95,9 +97,13 @@ class Engine:
             return
         elif self.player.lastnumber > self.dealer.lastnumber:
             self.player.playerwin()
+            print(f"Dealer Django's Final Number is {self.dealer.lastnumber}")
+            print("YOU WIN!!!")
             return
         elif self.player.lastnumber < self.dealer.lastnumber:
             self.dealer.dealerwin()
+            print(f"Your Final Number is {self.player.lastnumber}")
+            print("YOU LOSE!!!")
             return
     
 
@@ -121,13 +127,16 @@ class Engine:
                     self.dealer.cards.append(dealerlastcard)
                     self.player.printcards()
                     self.player.gettotalnumber()
-                    self.dealer.printcards()
                     self.dealer.gettotalnumber()
-                    self.conclusion()
-                    return
+                    decision = input(f"Ready to open Dealer Cards? Press Enter when ready")
+                    if decision == "":
+                        self.conclusion()
+                        return
                 else:
-                    self.conclusion()
-                    return
+                    decision = input(f"Ready to open Dealer Cards? Press Enter when ready")
+                    if decision == "":
+                        self.conclusion()
+                        return
      
             elif rubbercard == "n":
                 if self.dealer.lastnumber < 5:
@@ -155,20 +164,20 @@ class Engine:
         time.sleep(1.5)
 
     def tie(self):
+        print(f"Dealer Django's Cards : \033[91m{self.dealer.cards}\033[0m")
+        print(f"Your Final Number is {self.player.lastnumber}")
+        print(f"Dealer Django's Final Number is {self.dealer.lastnumber}")
         print(f"It's a draw :((((")
 
     def play_round(self):
-        print("Shuffling Deck....")
-        self.dealing()
         self.shuffledeck()
-        print("Drawing cards")
         self.dealing()
         self.firstdraw()
         if self.player.lastnumber >= 8 and self.player.lastnumber > self.dealer.lastnumber:
-            self.player.playerwin()
+            self.conclusion()
             return
         if self.dealer.lastnumber >= 8 and self.dealer.lastnumber > self.player.lastnumber:
-            self.dealer.dealerwin()
+            self.conclusion()
             return
         if self.player.lastnumber >=8 and self.player.lastnumber == self.dealer.lastnumber:
             self.tie()
@@ -189,6 +198,3 @@ print(f"Welcome {p.Name}, my name is {d.Name}, get ready for some Bacarrat")
 d = Dealer("Django")
 game = Engine(deck.cardlist, p, d)
 game.play_round()
-
-
-
