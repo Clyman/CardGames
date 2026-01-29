@@ -182,6 +182,58 @@ def print_draw_banner():
     print(" " * 10 + rainbow)
     print("\n" + "✨" * 40 + "\n")
 
+def print_front_page():
+    title = "DJANGO'S BACARRAT SALOON"
+    border = "=" * (len(title) + 6)
+    cowboy = r'''
+            _____
+           /_____\
+          /_____ _\
+          \     /
+           \___/
+         .-""""-.
+        /  .  .  \
+       /   (__)   \
+       |  \____/  |
+        \  /\/\  /
+         '.___.'
+           /|\
+          / | \
+         /  |  \
+            |
+           / \
+          /   \
+    '''
+    colors = [
+        "\033[91m",
+        "\033[93m",
+        "\033[92m",
+        "\033[96m",
+        "\033[94m",
+        "\033[95m",
+    ]
+    reset = "\033[0m"
+
+    print("\n" * 2)
+    print(border)
+    print(f"   {title}   ")
+    print(border)
+    for i, line in enumerate(cowboy.splitlines()):
+        if line.strip() == "":
+            print(line)
+        else:
+            color = colors[i % len(colors)]
+            print(f"{color}{line}{reset}")
+    name = "DJANGO"
+    rainbow = ""
+    for i, ch in enumerate(name):
+        color = colors[i % len(colors)]
+        rainbow += color + ch + reset
+    print(rainbow)
+    print("Dealer: Django")
+    print("Press Enter to start the game.")
+    input("")
+
 class Deck:
     def __init__(self):
         self.cardlist = []
@@ -379,6 +431,7 @@ class Engine:
         
             
 
+print_front_page()
 deck = Deck()   
 p = Player(input("What is your name?"))
 d = Dealer("Django")
