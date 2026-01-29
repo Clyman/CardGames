@@ -255,7 +255,7 @@ class Person:
         self.total = 0
         self.lastnumber = 0
 
-    def gettotalnumber(self):
+    def get_total_number(self):
         self.total = 0
         for card in self.cards:
             try:
@@ -269,7 +269,7 @@ class Person:
                     self.total = self.total + 1
         self.lastnumber = self.total % 10
 
-    def printcards(self):
+    def print_cards(self):
         print(self.cards)
 
 
@@ -277,12 +277,12 @@ class Player(Person):
     def __init__(self, Name):
         super().__init__(Name)
 
-    def playerwin(self):
+    def player_win(self):
         CardArt.print_side_by_side(self.cards, color="green")
         print(f"\033[92mYour Cards : {self.cards}\033[0m")
         print(f"\033[92mYour final number is {self.lastnumber}\033[0m")
 
-    def printcards(self):
+    def print_cards(self):
         CardArt.print_side_by_side(self.cards, color="green")
         print(f"\033[92mYour Cards : {self.cards}\033[0m")
 
@@ -291,14 +291,46 @@ class Dealer(Person):
     def __init__(self, Name):
         super().__init__(Name)
 
-    def dealerwin(self):
+    def dealer_win(self):
         CardArt.print_side_by_side(self.cards, color="red")
         print(f"\033[91mDjango's cards : {self.cards}\033[0m")
         print(f"\033[91mDjango's final number is {self.lastnumber}\033[0m")
 
-    def printcards(self):
+    def print_cards(self):
         CardArt.print_side_by_side(self.cards, color="red")
         print(f"\033[91mDjango's Cards : {self.cards}\033[0m")
+
+
+    def print_first_with_facedown(self):
+        if not self.cards:
+            print("Dealer has no cards.")
+            return
+
+        left, suits = self.cards[0].split("-")
+        rankdisplay = CardArt.RANK_DISPLAY[str(left)]
+        suitdisplay = CardArt.SUIT_SYMBOL[suits]
+        top_label = rankdisplay.ljust(2)
+        bot_label = rankdisplay.rjust(2)
+
+        faceup = [
+            "+-------+",
+            f"|{top_label}     |",
+            f"|   {suitdisplay}   |",
+            f"|     {bot_label}|",
+            "+-------+",
+        ]
+        facedown = [
+            "+-------+",
+            "|░░░░░░░|",
+            "|░░░░░░░|",
+            "|░░░░░░░|",
+            "+-------+",
+        ]
+
+        color_prefix = "\033[91m"
+        color_suffix = "\033[0m"
+        for i in range(len(faceup)):
+            print(f"{color_prefix}{faceup[i]}  {facedown[i]}{color_suffix}")
 
 class Engine:
     def __init__(self, deck, player, dealer):
@@ -306,47 +338,56 @@ class Engine:
         self.player = player
         self.dealer = dealer
 
-    def shuffledeck(self):
+    def shuffle_deck(self):
         print("Shuffling Deck....")
         random.shuffle(self.deck)
         self.dealing()
 
-    def firstdraw(self):
+    def first_draw(self):
         print("Drawing cards")
         self.player.cards.append(self.deck[0])
         self.deck.pop(0)
-        self.player.printcards()
+        self.player.print_cards()
         self.dealing()
+        print("Dealer draws cards")
         self.dealer.cards.append(self.deck[0])
         self.deck.pop(0)
+        self.dealing()
+        self.dealer.print_cards()
         self.player.cards.append(self.deck[0])
         self.deck.pop(0)
         print(f"Drawing Second Card...")
         self.dealing()
-        self.player.printcards()
-        self.player.gettotalnumber()
+        self.player.print_cards()
+        self.player.get_total_number()
+        self.dealing()
+        print("Dealer draws second card")
+        self.dealing()
         self.dealer.cards.append(self.deck[0])
         self.deck.pop(0)
-        self.dealer.gettotalnumber()
+        self.dealer.get_total_number()
+        if self.dealer.lastnumber not in range (8, 9):
+            self.dealer.print_first_with_facedown()
+        
 
     def conclusion(self):
         if self.player.lastnumber == self.dealer.lastnumber:
             self.tie()
             return
         elif self.player.lastnumber > self.dealer.lastnumber:
-            self.player.playerwin()
+            self.player.player_win()
             CardArt.print_side_by_side(self.dealer.cards, color="red")
             print(f"\033[91mDealer Django's Final Number is {self.dealer.lastnumber}\033[0m")
             print_win_banner()
             return
         elif self.player.lastnumber < self.dealer.lastnumber:
-            self.dealer.dealerwin()
+            self.dealer.dealer_win()
             print(f"Your Final Number is {self.player.lastnumber}")
             print_lose_banner()
             return
     
 
-    def drawcard(self):
+    def draw_card(self):
         while True:
             rubbercard = input(f"Do you want to draw a card? y for yes, n for no: ")
             if rubbercard == "y":
@@ -356,8 +397,8 @@ class Engine:
                 lastcard = self.deck[0]
                 self.deck.pop(0)
                 self.player.cards.append(lastcard)
-                self.player.printcards()
-                self.player.gettotalnumber()
+                self.player.print_cards()
+                self.player.get_total_number()
                 if self.dealer.lastnumber < 5:
                     self.dealer.total = 0
                     print(f"Dealer Drawing one Card...")
@@ -366,8 +407,8 @@ class Engine:
                     self.deck.pop(0)
                     self.dealer.cards.append(dealerlastcard)
                     print(f"Dealer is done drawing and now has 3 cards on hand")
-                    self.player.gettotalnumber()
-                    self.dealer.gettotalnumber()
+                    self.player.get_total_number()
+                    self.dealer.get_total_number()
                     decision = input(f"Ready to open Dealer Cards? Press Enter when ready")
                     if decision == "":
                         self.conclusion()
@@ -386,8 +427,8 @@ class Engine:
                     self.dealing()
                     self.deck.pop(0)
                     self.dealer.cards.append(dealerlastcard)
-                    self.player.gettotalnumber()
-                    self.dealer.gettotalnumber()
+                    self.player.get_total_number()
+                    self.dealer.get_total_number()
                     print(f"Opening Cards...")
                     self.dealing()
                     self.conclusion()
@@ -413,9 +454,9 @@ class Engine:
         print_draw_banner()
 
     def play_round(self):
-        self.shuffledeck()
+        self.shuffle_deck()
         self.dealing()
-        self.firstdraw()
+        self.first_draw()
         if self.player.lastnumber >= 8 and self.player.lastnumber > self.dealer.lastnumber:
             self.conclusion()
             return
@@ -426,7 +467,7 @@ class Engine:
             self.tie()
             return
         else:
-            self.drawcard()
+            self.draw_card()
 
         
             
