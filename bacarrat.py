@@ -99,6 +99,76 @@ def print_win_banner():
     print(" " * 10 + rainbow)
     print("\n" + "✨" * 40 + "\n")
 
+def print_win_banner_x2():
+    colors = [
+        "\033[91m",
+        "\033[93m",
+        "\033[92m",
+        "\033[96m",
+        "\033[94m",
+        "\033[95m",
+    ]
+    reset = "\033[0m"
+
+    text = " WIN x2! "
+    rainbow = ""
+
+    for i, ch in enumerate(text):
+        if ch == " ":
+            rainbow += " "
+        else:
+            color = colors[i % len(colors)]
+            rainbow += color + ch + reset
+
+    print("\n" * 2)
+    print("💰" * 28)
+    print("💰   🎉🎉🎉   DOUBLE PAYOUT!   🎉🎉🎉   💰")
+    print("💰" * 28)
+    print(r"""
+ __   __        _       _  ____  
+ \ \ / /__  ___| |_    | |/ /  \ 
+  \ V / _ \/ __| __|   | ' / () |
+   | |  __/\__ \ |_    | . \__/ 
+   |_|\___||___/\__|   |_|\_\    
+""")
+    print(" " * 10 + rainbow)
+    print("\n" + "✨" * 40 + "\n")
+
+def print_win_banner_x3():
+    colors = [
+        "\033[91m",
+        "\033[93m",
+        "\033[92m",
+        "\033[96m",
+        "\033[94m",
+        "\033[95m",
+    ]
+    reset = "\033[0m"
+
+    text = " WIN x3! "
+    rainbow = ""
+
+    for i, ch in enumerate(text):
+        if ch == " ":
+            rainbow += " "
+        else:
+            color = colors[i % len(colors)]
+            rainbow += color + ch + reset
+
+    print("\n" * 2)
+    print("💰" * 28)
+    print("💰   🎉🎉🎉   TRIPLE PAYOUT!   🎉🎉🎉   💰")
+    print("💰" * 28)
+    print(r"""
+ __   __        _       _  ____  
+ \ \ / /__  ___| |_    | |/ /  \ 
+  \ V / _ \/ __| __|   | ' / () |
+   | |  __/\__ \ |_    | . \__/ 
+   |_|\___||___/\__|   |_|\_\    
+""")
+    print(" " * 10 + rainbow)
+    print("\n" + "✨" * 40 + "\n")
+
 def print_lose_banner():
     colors = [
         "\033[91m",
@@ -286,6 +356,45 @@ class Player(Person):
         CardArt.print_side_by_side(self.cards, color="green")
         print(f"\033[92mYour Cards : {self.cards}\033[0m")
 
+    def check_times_two(self):
+        if len(self.cards) == 2:
+            firstsuit = str(self.cards[0].split("-")[1])
+            secondsuit = str(self.cards[1].split("-")[1])
+            try:
+                firstnumber = int(self.cards[0].split("-")[0])
+            except ValueError:
+                firstnumber = str(self.cards[0].split("-")[0])
+            try:
+                secondnumber = int(self.cards[1].split("-")[0])
+            except ValueError:
+                secondnumber = str(self.cards[1].split("-")[0])
+            
+            if firstsuit == secondsuit or firstnumber == secondnumber:
+                return True
+            else:
+                return False
+
+    def check_times_three(self):
+        if len(self.cards) == 3:
+            firstsuit = str(self.cards[0].split("-")[1])
+            secondsuit = str(self.cards[1].split("-")[1])
+            thirdsuit = str(self.cards[2].split("-")[1])
+            try:
+                firstnumber = int(self.cards[0].split("-")[0])
+            except ValueError:
+                firstnumber = str(self.cards[0].split("-")[0])
+            try:
+                secondnumber = int(self.cards[1].split("-")[0])
+            except ValueError:
+                secondnumber = str(self.cards[1].split("-")[0])
+            try:
+                thirdnumber = int(self.cards[2].split("-")[0]) 
+            except ValueError:
+                thirdnumber = str(self.cards[2].split("-")[0])
+            if firstsuit == secondsuit == thirdsuit or firstnumber == secondnumber == thirdnumber:
+                return True
+            else:
+                return False
 
 class Dealer(Person):
     def __init__(self, Name):
@@ -333,7 +442,7 @@ class Dealer(Person):
             print(f"{color_prefix}{faceup[i]}  {facedown[i]}{color_suffix}")
 
 class Engine:
-    def __init__(self, deck, player, dealer):
+    def __init__(self, deck: Deck, player: Player, dealer: Dealer):
         self.deck = deck
         self.player = player
         self.dealer = dealer
@@ -368,23 +477,45 @@ class Engine:
         self.dealer.get_total_number()
         if self.dealer.lastnumber not in range (8, 9):
             self.dealer.print_first_with_facedown()
-        
+    
 
     def conclusion(self):
-        if self.player.lastnumber == self.dealer.lastnumber:
-            self.tie()
-            return
-        elif self.player.lastnumber > self.dealer.lastnumber:
-            self.player.player_win()
-            CardArt.print_side_by_side(self.dealer.cards, color="red")
-            print(f"\033[91mDealer Django's Final Number is {self.dealer.lastnumber}\033[0m")
-            print_win_banner()
-            return
-        elif self.player.lastnumber < self.dealer.lastnumber:
-            self.dealer.dealer_win()
-            print(f"Your Final Number is {self.player.lastnumber}")
-            print_lose_banner()
-            return
+        if len(self.player.cards) == 2:
+            if self.player.lastnumber == self.dealer.lastnumber:
+                self.tie()
+                return
+            elif self.player.lastnumber > self.dealer.lastnumber and self.player.check_times_two() == False:
+                self.player.player_win()
+                CardArt.print_side_by_side(self.dealer.cards, color="red")
+                print(f"\033[91mDealer Django's Final Number is {self.dealer.lastnumber}\033[0m")
+                print_win_banner()
+                return
+            elif self.player.lastnumber > self.dealer.lastnumber and self.player.check_times_two() == True:
+                self.player.player_win()
+                CardArt.print_side_by_side(self.dealer.cards, color="red")
+                print(f"\033[91mDealer Django's Final Number is {self.dealer.lastnumber}\033[0m")
+                print_win_banner_x2()
+                return
+            elif self.player.lastnumber < self.dealer.lastnumber:
+                self.dealer.dealer_win()
+                print(f"Your Final Number is {self.player.lastnumber}")
+                print_lose_banner()
+                return
+        elif len(self.player.cards) == 3:
+            if self.player.lastnumber == self.dealer.lastnumber:
+                self.tie()
+                return
+            elif self.player.lastnumber > self.dealer.lastnumber and self.player.check_times_three() == False:
+                self.player.player_win()
+                CardArt.print_side_by_side(self.dealer.cards, color="red")
+                print(f"\033[91mDealer Django's Final Number is {self.dealer.lastnumber}\033[0m")
+                print_win_banner_x3()
+                return
+            elif self.player.lastnumber < self.dealer.lastnumber:
+                self.dealer.dealer_win()
+                print(f"Your Final Number is {self.player.lastnumber}")
+                print_lose_banner()
+                return
     
 
     def draw_card(self):
