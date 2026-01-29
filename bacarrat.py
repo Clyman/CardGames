@@ -589,14 +589,16 @@ class Engine:
                     self.dealer.cards.append(dealerlastcard)
                     self.player.get_total_number()
                     self.dealer.get_total_number()
-                    print(f"Opening Cards...")
-                    self.dealing()
-                    self.conclusion()
+                    decision = input(f"Ready to open Dealer Cards? Press Enter when ready")
+                    if decision == "":
+                        self.conclusion()
+                        return
                     return
                 else:
-                    print(f"Opening Cards...")
-                    self.dealing()
-                    self.conclusion()
+                    decision = input(f"Ready to open Dealer Cards? Press Enter when ready")
+                    if decision == "":
+                        self.conclusion()
+                        return
                     return
             
             else:
