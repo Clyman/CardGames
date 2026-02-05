@@ -30,18 +30,48 @@ class Person:
         self.hand[0] = deck.card_list[0]
         deck.card_list.pop(0)
 
-    #def stand(self):
 
 class Table:
-    def __init__(self, prize_pool, *args):
-        self.prize_pool = prize_pool
+    def __init__(self):
+        self.deck = Deck()
         self.table_cards = []
         self.players = []
-        for player in args:
-            self.players.append(player)
+
+    def initialise_players(self):
+        while True:
+            try:
+                self.balance = int(input(f"Please enter the amount each person should have: "))
+                break
+            except ValueError:
+                print(f"Please only input a whole number")
+        while True:
+            print("Please enter Player Name and type end once done")
+            name = str(input(f"Player Name: "))
+            if name != "end":
+                self.players.append(Person(name, self.balance))
+            if name == "end":
+                break
+            elif name == int or name == float:
+                print("Please enter an appropriate value")
+                continue
+    
+    def starting_to_prize_pool(self):
+        while True:
+            try:
+                buy_in = int(input(f"Enter the Buy-In amount for each player: "))
+                break
+            except ValueError:
+                print(f"Please enter only a whole number!!!")
+                continue
+
+        no_of_players = len(self.players)
+        self.prize_pool = no_of_players * buy_in
+        print(f"Total amount in Prize Pool : {self.prize_pool}")
 
     def print_players(self):
-        print(self.players)
+        print(f"Player List for this round of Bacarrat: ")
+        for i, name in enumerate(self.players):
+            print(f"{self.players[i].name}  ---  Balance : {self.players[i].balance}")
 
     def next_two_cards(self, deck):
         self.table_cards[0] = deck.card_list[0]
@@ -51,46 +81,16 @@ class Table:
 
 
 class Engine:
-    def __init__(self, deck, table):
-        self.deck = deck
+    def __init__(self, table):
         self.table = table
-        self.players = []
     
     def play_round(self):
-        self.deck.populate()
-        self.deck.shuffle()
-        self.balance = int(input(f"Please enter the amount each person should have: "))
-        while True:
-            print("Please enter Player Names and type end once done")
-            name = str(input(f"Player Name: "))
-            if name != "end":
-                players.append(Person(name, balance))
-            else:
-                break
+        self.table.deck.populate()
+        self.table.deck.shuffle()
+        self.table.initialise_players()
+        self.table.print_players()
+        self.table.starting_to_prize_pool()
 
-        
-
-
-        
-        
-
-
-
-
-deck = Deck()
-deck.populate()
-deck.shuffle()
-players = []
-balance = int(input(f"Please enter the amount each person should have: "))
-while True:
-    print("Please enter Player Names and type end once done")
-    name = str(input(f"Player Name: "))
-    if name != "end":
-        players.append(Person(name, balance))
-    else:
-        break 
-    
-table = Table(1000, *players)
-print(table.players)
-print(deck.card_list)
-print(len(deck.card_list))
+table = Table()
+game = Engine(table)
+game.play_round()
