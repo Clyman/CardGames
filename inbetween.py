@@ -25,6 +25,7 @@ class Person:
     def __init__(self, name, balance):
         self.name = name
         self.balance = balance
+        self.initial_balance = balance
         self.hand = [None]
 
     def draw_card(self, deck):
@@ -94,7 +95,11 @@ class Engine:
         for index, name in enumerate(self.table.players):
             self.table.players[index].balance = self.table.players[index].balance - buy_in
         self.print_players()
-        print(f"Total amount in Prize Pool : {self.table.prize_pool}")
+
+    def check_prize_pool(self):
+        if self.table.prize_pool == 0:
+            return True
+
 
     def table_two_cards(self):
         confirmation = input(f"Press Enter for next two cards.")
@@ -142,8 +147,15 @@ class Engine:
             self.print_players()
             print(f"{self.table.players[next_index].name}'s turn")
 
-
-
+    def count_money(self):
+            print(f"Counting the total payment....")
+            for index, name in enumerate(self.table.players):
+                if self.table.players[index].balance < self.table.players[index].initial_balance:
+                    self.table.players[index].payment = self.table.players[index].initial_balance - self.table.players[index].balance
+                    print(f"{self.table.players[index].name} owes {self.table.players[index].balance}")
+                elif self.table.players[index].balance > self.table.players[index].initial_balance:
+                    self.table.players[index].payment = self.table.players[index].balance - self.table.players[index].initial_balance
+                    print(f"{self.table.players[index].name} wins {self.table.players[index].payment}")
 
     def player_turn(self, index):
         print(f"It's {self.table.players[index].name}'s turn")
@@ -185,12 +197,16 @@ class Engine:
             return
 
         current_index = 0
-        del self.table.deck.card_list[:45]
+    
         while True:
 
             if len(self.table.deck.card_list) >= 3:
-                print(self.table.deck.card_list)
                 self.player_turn(current_index)
+                if self.check_prize_pool() == True:
+                    print(f"GAME IS OVER. CONGRATULATIONS TO WINNER. Transfer the money accordingly")
+                    self.print_players()
+                    self.count_money()
+                    break
                 current_index = (current_index + 1) % len(self.table.players)
             else:
                 self.table.deck.populate()
