@@ -52,17 +52,12 @@ class Engine:
         self.table = table
 
     def initialise_players(self):
-        while True:
-            try:
-                self.table.balance = int(input(f"Please enter the amount each person should have: "))
-                break
-            except ValueError:
-                print(f"Please only input a whole number")
+        
         while True:
             print("Please enter Player Name and type end once done")
             name = str(input(f"Player Name: "))
             if name != "end" and name != "":
-                self.table.players.append(Person(name, self.table.balance))
+                self.table.players.append(Person(name, 0))
             if name == "end":
                 break
             elif name == "":
@@ -71,11 +66,15 @@ class Engine:
             elif name == int or name == float:
                 print("Please enter an appropriate value")
                 continue
+        no_of_players = len(self.table.players)
+        self.table.prize_pool = no_of_players * self.table.buy_in
+        self.print_players()
+
 
     def print_players(self):
         print(f"Player List for this round of Bacarrat: ")
         for i, name in enumerate(self.table.players):
-            print(f"{self.table.players[i].name}  ---  Balance : {self.table.players[i].balance}")
+            print(f"{self.table.players[i].name}  ---  Balance : {self.table.players[i].balance} - BuyIn({self.table.buy_in})")
         self.print_prize_pool()
 
     def print_prize_pool(self):
@@ -84,17 +83,11 @@ class Engine:
     def starting_to_prize_pool(self):
         while True:
             try:
-                buy_in = int(input(f"Enter the Buy-In amount for each player: "))
+                self.table.buy_in = int(input(f"Enter the Buy-In amount for each player: "))
                 break
             except ValueError:
                 print(f"Please enter only a whole number!!!")
                 continue
-
-        no_of_players = len(self.table.players)
-        self.table.prize_pool = no_of_players * buy_in
-        for index, name in enumerate(self.table.players):
-            self.table.players[index].balance = self.table.players[index].balance - buy_in
-        self.print_players()
 
     def check_prize_pool(self):
         if self.table.prize_pool == 0:
@@ -152,7 +145,7 @@ class Engine:
             for index, name in enumerate(self.table.players):
                 if self.table.players[index].balance < self.table.players[index].initial_balance:
                     self.table.players[index].payment = self.table.players[index].initial_balance - self.table.players[index].balance
-                    print(f"{self.table.players[index].name} owes {self.table.players[index].balance}")
+                    print(f"{self.table.players[index].name} owes {self.table.players[index].payment}")
                 elif self.table.players[index].balance > self.table.players[index].initial_balance:
                     self.table.players[index].payment = self.table.players[index].balance - self.table.players[index].initial_balance
                     print(f"{self.table.players[index].name} wins {self.table.players[index].payment}")
@@ -191,8 +184,8 @@ class Engine:
         self.table.deck.populate()
         self.table.deck.shuffle()
         print(self.table.deck.card_list)
-        self.initialise_players()
         self.starting_to_prize_pool()
+        self.initialise_players()
         if len(self.table.players) == 0:
             return
 
