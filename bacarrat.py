@@ -355,8 +355,7 @@ class Person:
                     continue
         return True
 class Player(Person):
-    def __init__(self, Name):
-        super().__init__(Name)
+    pass
 
     def player_win(self):
         CardArt.print_side_by_side(self.cards, color="green")
@@ -410,8 +409,7 @@ class Player(Person):
             
 
 class Dealer(Person):
-    def __init__(self, Name):
-        super().__init__(Name)
+    pass
 
     def dealer_win(self):
         CardArt.print_side_by_side(self.cards, color="red")
