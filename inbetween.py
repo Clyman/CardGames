@@ -1,5 +1,73 @@
 import random
 
+class CardArt:
+    RANK_DISPLAY = {
+        "Ace": "A",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "10": "10",
+        "Jack": "J",
+        "Queen": "Q",
+        "King": "K",
+    }
+
+    SUIT_SYMBOL = {
+        "Spades": "♠",
+        "Hearts": "♥",
+        "Clubs": "♣",
+        "Diamond": "♦",
+    }
+
+    SUIT_COLOR = {
+        "Spades": "\033[30m",   # black
+        "Clubs": "\033[30m",    # black
+        "Hearts": "\033[31m",   # red
+        "Diamond": "\033[31m",  # red
+    }
+
+    RESET = "\033[0m"
+
+    @classmethod
+    def print_side_by_side(cls, cards):
+        ascii_blocks = []
+        for card in cards:
+            if not card:
+                continue
+            rank, suit = card.split("-")
+            rankdisplay = cls.RANK_DISPLAY[str(rank)]
+            suitdisplay = cls.SUIT_SYMBOL[suit]
+            color = cls.SUIT_COLOR.get(suit, "")
+            top_label = rankdisplay.ljust(2)
+            bot_label = rankdisplay.rjust(2)
+
+            ascii_card = [
+                "+-------+",
+                f"|{top_label}     |",
+                f"|   {suitdisplay}   |",
+                f"|     {bot_label}|",
+                "+-------+",
+            ]
+            ascii_blocks.append((ascii_card, color))
+
+        if not ascii_blocks:
+            print("(no cards)")
+            return
+
+        for row in range(len(ascii_blocks[0][0])):
+            colored_row = []
+            for block, color in ascii_blocks:
+                if color:
+                    colored_row.append(f"{color}{block[row]}{cls.RESET}")
+                else:
+                    colored_row.append(block[row])
+            print("  ".join(colored_row))
+
 class Deck:
     def __init__(self):
         self.card_list = []
@@ -99,7 +167,8 @@ class Engine:
         while True:
             if confirmation == "":
                 self.table.next_two_cards()
-                print(self.table.table_cards)
+                print("Table Cards:")
+                CardArt.print_side_by_side(self.table.table_cards)
                 break
             else:
                 print("Please only use Enter to continue")
@@ -154,8 +223,8 @@ class Engine:
         print(f"It's {self.table.players[index].name}'s turn")
         self.table_two_cards()
         while True:
-            bet = input(f"How much would {self.table.players[index].name} like to bet? Input skip if you want to skip.").strip()
-            if bet.lower() == "skip":
+            bet = input(f"How much would {self.table.players[index].name} like to bet? Input s if you want to skip.").strip()
+            if bet.lower() == "s":
                 print(f"{self.table.players[index].name} has chosen to skip. On to the next player")
                 self.print_players()
                 return
@@ -171,7 +240,8 @@ class Engine:
             double_confirm = input(f"Are you sure you want to bet this amount : {bet}? Enter again for yes n for no").strip().lower()
             if double_confirm == "":
                 self.table.players[index].draw_card(self.table.deck)
-                print(self.table.players[index].hand)
+                print(f"{self.table.players[index].name}'s Card:")
+                CardArt.print_side_by_side(self.table.players[index].hand)
                 self.compute_cards(index, bet)
                 return
             if double_confirm == "n":

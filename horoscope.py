@@ -9,7 +9,11 @@ class Horoscopeinputs:
         def wrapper(self):
             result = fn(self)
             if isinstance(result, str):
-                r = requests.get(f"https://ohmanda.com/api/horoscope/{result.lower()}")
+                params = (
+                ('sign', 'aries'),
+                ('day', 'today'),
+                )
+                r = requests.post('https://aztro.sameerkumar.website/', params=params)
                 return r
             elif isinstance(result, tuple) and len(result) == 2:
                 sign1 = result[0]
@@ -41,8 +45,7 @@ class Horoscopeinputs:
         choice = int(input(f"Choice: "))
         if choice == 1:
             detail = self.checksign()
-            data = detail.json()
-            print(data["horoscope"])
+            print(detail)
 
         elif choice == 2:
             detail = self.checkcompatibility()
