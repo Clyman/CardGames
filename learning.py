@@ -1,17 +1,31 @@
-from doctest import debug_script
+#binary search practice on words
+arr = ["test", "test1", "apple", "orange", "banana", "kiwi", "pomegrenade", "grape", "pineapple"]
+word_arr = sorted(arr)
 
+def binary_search(word_arr, target):
+    low = 0 
+    high = len(word_arr) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        mid_val = word_arr[mid]
+        if mid_val == target:
+            return mid
+        elif mid_val > target:
+            high = mid - 1
+        elif mid_val < target:
+            low = mid + 1
 
-def debug(function):
-    def wrapper(*args, **kwargs):
-        print(function.__name__)
-        print(f"{args}, {kwargs}")
-        x = function(*args, **kwargs)
-        print(x)
-        return x
-    return wrapper
+    return -1 
 
-@debug
-def add(a, b, scale=1):
-    return (a + b) * scale
+x = binary_search(word_arr, "banana")
+print(x)
 
-print(add(2, 3, scale=10))
+#linear search 
+def linear_search(word_arr, target):
+    for index, value in enumerate(word_arr):
+        if value == target:
+            return index
+    return -1 
+
+a = linear_search(word_arr, "banana")
+print(a)

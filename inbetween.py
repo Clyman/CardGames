@@ -230,9 +230,13 @@ class Engine:
                 return
             try:
                 bet = int(bet)
+
             except ValueError:
                 print(f"Please input either an integer for bet or skip if you want to skip !!!!")
                 continue
+            if bet > self.table.prize_pool:
+                    print(f"You cannot bet more than the Prize Pool. Current Prize Pool: {self.table.prize_pool}")
+                    continue
             if bet <= 0:
                 print("Please input a positive whole number for the bet.")
                 continue
