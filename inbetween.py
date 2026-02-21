@@ -90,10 +90,10 @@ class Deck:
         random.shuffle(self.card_list)
 
 class Person:
-    def __init__(self, name, balance):
+    def __init__(self, name, balance, initial_balance):
         self.name = name
         self.balance = balance
-        self.initial_balance = balance
+        self.initial_balance = initial_balance
         self.hand = [None]
 
     def draw_card(self, deck):
@@ -125,7 +125,7 @@ class Engine:
             print("Please enter Player Name and type end once done")
             name = str(input(f"Player Name: "))
             if name != "end" and name != "":
-                self.table.players.append(Person(name, 0))
+                self.table.players.append(Person(name, 0, self.table.buy_in))
             if name == "end":
                 break
             elif name == "":
@@ -218,6 +218,8 @@ class Engine:
                 elif self.table.players[index].balance > self.table.players[index].initial_balance:
                     self.table.players[index].payment = self.table.players[index].balance - self.table.players[index].initial_balance
                     print(f"{self.table.players[index].name} wins {self.table.players[index].payment}")
+                elif self.table.players[index].balance == self.table.players[index].initial_balance:
+                    print(f"{self.table.players[index].name} breaks even (0)")
 
     def player_turn(self, index):
         print(f"It's {self.table.players[index].name}'s turn")
@@ -258,6 +260,7 @@ class Engine:
         self.table.deck.populate()
         self.table.deck.shuffle()
         print(self.table.deck.card_list)
+        print(len(self.table.deck.card_list))
         self.starting_to_prize_pool()
         self.initialise_players()
         if len(self.table.players) == 0:
